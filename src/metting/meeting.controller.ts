@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { MeetingService } from './meeting.service';
-import { Repository } from 'typeorm';
+import { Any, Repository } from 'typeorm';
 import { MeetingEntity } from 'src/entity/meeting.entity';
 import { MeetingDTO } from 'src/dto/meeting.dto';
 import { UserService } from 'src/user/user.service';
@@ -16,9 +24,9 @@ export class MeetingController {
     private readonly roomService: RoomService,
     private readonly teamService: TeamService,
     private readonly meetingRoomService: MeetingRoomService,
-  ) { }
+  ) {}
 
-  @Post(':user_id/createMeeting')
+  @Post(':user_id/create-Meeting')
   async createMeeting(
     @Param('user_id') user_id: number,
     @Body() meeting: MeetingEntity,
@@ -40,7 +48,7 @@ export class MeetingController {
     }
   }
 
-  @Put(':user_id/updateMeeting/:id')
+  @Put(':user_id/update-Meeting/:id')
   async updateMeeting(
     @Param('user_id') user_id: number,
     @Param('id') id: number,
@@ -49,23 +57,62 @@ export class MeetingController {
     const checkExistUser = await this.userService.ExistUser(user_id);
     const checkExistMeeting = await this.meetingService.FindMeeting(id);
     const checkExistTeam = await this.teamService.existTeam(meeting.team_id);
+    const checkMeetingWithMeetingRoomID =
+    await this.meetingService.FindMeetingWithMeetingRoomID(id, user_id);
     const checkStatusMeetingRoom =
       await this.meetingRoomService.checkExistMeetingRoomID(
         meeting.meeting_room_id,
       );
+    const checkRoleUser = await this.userService.checkRole(user_id);
+    const exMeetingRoom = await this.meetingRoomService.findMeetingRomByID(
+      checkMeetingWithMeetingRoomID.meeting_room_id,
+    );
     if (
       checkExistTeam &&
       checkExistUser &&
       checkStatusMeetingRoom &&
       checkExistMeeting
     ) {
-      await this.meetingRoomService.updateStatusMeetingRoom(
-        meeting.meeting_room_id,
-      );
-      meeting.user_id = user_id;
-      return await this.meetingService.save(meeting);
+      if (
+        checkMeetingWithMeetingRoomID ||
+        checkRoleUser === 2 ||
+        checkRoleUser === 1
+      ) {
+        await this.meetingRoomService.updateStatusMeetingRoom(
+          meeting.meeting_room_id,
+        );
+        await this.meetingRoomService.updateStatusMeetingRoom(exMeetingRoom.id);
+        return await this.meetingService.update(id, meeting);
+      }
     } else {
       console.log('Thêm cuộc họp thất bại!');
+    }
+  }
+
+  @Delete(':user_id/delete-Meeting/:id')
+  async deleteMeeting(
+    @Param('user_id') user_id: number,
+    @Param('id') id: number,
+  ) {
+    const checkRoleUser = await this.userService.checkRole(user_id);
+    const checkMeetingWithMeetingRoomID =
+    await this.meetingService.FindMeetingWithMeetingRoomID(id, user_id);
+    if(checkRoleUser ===1 || checkRoleUser ===2 || checkMeetingWithMeetingRoomID){
+      return this.meetingService.remove(id)
+    }else{
+      console.log("Không có quyền xoá meeting!");
+    }
+  }
+
+  @Get(':user_id/Get-All-Meeting')
+  async getAllMeeting(@Param('user_id') user_id: number){
+    const checkRoleUser = await this.userService.checkRole(user_id);
+    const checkMeetingWithUserID = await this.meetingService.FindMeetingWithUserID(user_id)
+    const allMeeting = await this.meetingService.FindAllMeeting()
+    if(checkRoleUser === 1 || checkRoleUser == 2 ){
+      return allMeeting
+    } else if(checkMeetingWithUserID){
+      return checkMeetingWithUserID
     }
   }
 }
