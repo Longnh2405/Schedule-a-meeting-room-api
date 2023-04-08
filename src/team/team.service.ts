@@ -1,11 +1,9 @@
 
 import { MysqlBaseService } from "src/common/mysql/base.service";
-import { TeamEntity } from "./team.entity";
-import { TeamDTO } from "./team.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Body } from "@nestjs/common";
-import { plainToInstance } from "class-transformer";
+import { FindOneOptions, Repository } from "typeorm";
+import { TeamDTO } from "src/dto/team.dto";
+import { TeamEntity } from "src/entity/team.entity";
 
 
 export class TeamService extends MysqlBaseService<TeamEntity,TeamDTO>{
@@ -14,5 +12,12 @@ export class TeamService extends MysqlBaseService<TeamEntity,TeamDTO>{
         private readonly teamRepository: Repository<TeamEntity>
     ){
         super(teamRepository);
+    }
+    async existTeam(id: number): Promise<TeamDTO>{
+        const options: FindOneOptions ={
+            where: {id}
+        }
+        const check =  await this.teamRepository.findOne(options)
+        return check
     }
 }

@@ -11,5 +11,6 @@ export class UserDTO extends MysqlBaseDTO {
 
   password: string;
 
+  @Expose()
   type: number;
 }

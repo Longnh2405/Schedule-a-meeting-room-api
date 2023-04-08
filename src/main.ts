@@ -20,6 +20,7 @@ async function start() {
   await app.listen(3333, (): void => {
     console.log('Kết nối thành công!');
   });
+  
 }
 
 start();

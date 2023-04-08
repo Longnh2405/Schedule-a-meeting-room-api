@@ -4,6 +4,7 @@ import { BaseEntity } from './base.entity';
 import { plainToInstance } from 'class-transformer';
 import { DataDTO } from '../base.dto';
 
+
 @Injectable()
 export class MysqlBaseService<dataEntity extends any, DataDTO> {
   constructor(protected repository: Repository<dataEntity>) {}

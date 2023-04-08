@@ -2,6 +2,8 @@ import { Expose } from 'class-transformer';
 
 
 export class MysqlBaseDTO {
+  @Expose()
+  id: number
 
   @Expose()
   created_at:Date;
