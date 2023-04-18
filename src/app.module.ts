@@ -1,37 +1,38 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './entity/user.entity';
-import { TeamEntity } from './entity/team.entity';
-import { RoomEntity } from './entity/room.entity';
-import { MeetingRoomEntity } from './entity/meeting_room.entity';
 import { MeetingEntity } from './entity/meeting.entity';
+import { MeetingRoomEntity } from './entity/meeting_room.entity';
+import { RoomEntity } from './entity/room.entity';
+import { TeamEntity } from './entity/team.entity';
+import { UserEntity } from './entity/user.entity';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'long123',
-      database: 'meeting-room2',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       entities: [
         UserEntity,
-        TeamEntity,
         RoomEntity,
-        MeetingRoomEntity,
+        TeamEntity,
         MeetingEntity,
+        MeetingRoomEntity,
       ],
       // logging: 'all',
-      synchronize: true,
-      // synchronize: false,
+      // synchronize: true,
     }),
     TypeOrmModule.forFeature([
       UserEntity,
-      TeamEntity,
       RoomEntity,
-      MeetingRoomEntity,
+      TeamEntity,
       MeetingEntity,
+      MeetingRoomEntity,
     ]),
   ],
   controllers: [],

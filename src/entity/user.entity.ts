@@ -1,12 +1,7 @@
 import { BaseEntity } from 'src/common/mysql/base.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { MeetingEntity } from './meeting.entity';
-
-enum UserRole {
-  ADMIN = 1,
-  BACKOFFICE = 2,
-  USER = 3,
-}
+import { UserRole } from './enum.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {

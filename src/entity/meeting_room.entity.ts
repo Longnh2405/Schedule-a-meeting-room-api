@@ -2,11 +2,7 @@ import { BaseEntity } from 'src/common/mysql/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { RoomEntity } from './room.entity';
 import { MeetingEntity } from './meeting.entity';
-
-enum status {
-  AVAILABLE = 1,
-  BOOKED = 2,
-}
+import { status } from './enum.entity';
 
 @Entity('meeting_rooms')
 export class MeetingRoomEntity extends BaseEntity {
@@ -33,7 +29,7 @@ export class MeetingRoomEntity extends BaseEntity {
   status: status;
 
   @ManyToOne(() => RoomEntity, (room) => room.meetingRoom)
-  @JoinColumn({ name: 'room_id' }) // Tên cột khoá ngoại trong bảng ChildEntity
+  @JoinColumn({ name: 'room_id' })
   room: RoomEntity;
 
   @OneToOne(() => MeetingEntity, (meeting) => meeting.meeting_room_id)

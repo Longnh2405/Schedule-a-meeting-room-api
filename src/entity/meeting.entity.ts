@@ -19,11 +19,11 @@ export class MeetingEntity extends BaseEntity {
   team_id: number;
 
   @ManyToOne(() => UserEntity, (user) => user.meeting)
-  @JoinColumn({ name: 'user_id' }) // Tên cột khoá ngoại trong bảng ChildEntity
+  @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
   @ManyToOne(() => TeamEntity, (team) => team.meeting)
-  @JoinColumn({ name: 'team_id' }) // Tên cột khoá ngoại trong bảng ChildEntity
+  @JoinColumn({ name: 'team_id' })
   team: TeamEntity;
 
   @OneToOne(() => MeetingRoomEntity, (meetingRoom) => meetingRoom.meeting)
