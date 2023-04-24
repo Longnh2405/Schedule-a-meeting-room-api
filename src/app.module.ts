@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
+import { AuthService } from './auth/auth.service';
 import { MeetingEntity } from './entity/meeting.entity';
 import { MeetingRoomEntity } from './entity/meeting_room.entity';
 import { RoomEntity } from './entity/room.entity';
 import { TeamEntity } from './entity/team.entity';
 import { UserEntity } from './entity/user.entity';
-import * as dotenv from 'dotenv';
+import { UserController } from './users/user.controller';
+import { UserService } from './users/user.service';
 
 dotenv.config();
 @Module({
@@ -34,8 +38,12 @@ dotenv.config();
       MeetingEntity,
       MeetingRoomEntity,
     ]),
+    JwtModule.register({
+      secret: 'Booking-Room',
+      signOptions: { expiresIn: '60s' },
+    }),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [UserController],
+  providers: [UserService, AuthService],
 })
 export class AppModule {}
