@@ -12,7 +12,7 @@ export class AuthService {
 
   async login(username: string, password: string) {
     const user = await this.usersService.findOneByUsername(username);
-    if ((!user || user.password !== password) && user.deleted_at == null) {
+    if (!user || user.password !== password || user.deleted_at !== null) {
       throw new UnauthorizedException('Invalid credentials');
     }
     const payload = { username: user.username, id: user.id, type: user.type };

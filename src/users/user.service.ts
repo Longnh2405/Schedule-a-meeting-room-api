@@ -1,8 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { AuthService } from 'src/auth/auth.service';
 import { UserDTO } from 'src/dto/user.dto';
 import { UserEntity } from 'src/entity/user.entity';
 import { resolveError } from 'src/error/error';
@@ -12,7 +10,7 @@ import { FindOneOptions, Repository } from 'typeorm';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>, // private authService: AuthService,
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
 
   async createUser(userDTO: UserDTO): Promise<UserDTO> {
