@@ -10,6 +10,7 @@ import { TeamEntity } from './entity/team.entity';
 import { UserEntity } from './entity/user.entity';
 import { UserController } from './users/user.controller';
 import { UserService } from './users/user.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 dotenv.config();
 @Module({
@@ -44,6 +45,6 @@ dotenv.config();
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, AuthService],
+  providers: [UserService, AuthService, AuthGuard],
 })
 export class AppModule {}
