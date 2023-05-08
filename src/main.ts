@@ -10,7 +10,7 @@ async function start() {
     .setTitle('API Meeting Room')
     .setDescription('API Meeting Room')
     .setVersion('1.0')
-    .addTag('API')
+    .addTag('API Meeting-Room')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
