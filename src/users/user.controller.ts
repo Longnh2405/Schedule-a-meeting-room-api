@@ -135,7 +135,9 @@ export class UserController {
       const user = await this.userService.findOneByID(id);
       if (userFindByToken.id === Number(id) || userFindByToken.type === 1) {
         user.username = userUpdate.username;
-        user.password = await bcrypt.hash(user.password, 10);
+        if (userUpdate.password !== null) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
         await this.userService.updateUser(id, user);
         res.status(HttpStatus.OK).send({
           username: user.username,
