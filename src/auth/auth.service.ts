@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/users/user.service';
 import * as bcrypt from 'bcrypt';
@@ -21,8 +25,15 @@ export class AuthService {
     }
     const payload = { username: user.username, id: user.id, type: user.type };
     const authen_token = await this.jwtService.signAsync(payload);
-    user.authen_token = authen_token;
-    await this.userService.updateUser(user.id, user);
+    try {
+      user.authen_token = authen_token;
+      await this.userService.updateUser(user.id, user);
+    } catch {
+      throw new BadRequestException(
+        'Cập nhật token vào user không thành công!',
+      );
+    }
+
     return {
       username: user.username,
       authen_token,

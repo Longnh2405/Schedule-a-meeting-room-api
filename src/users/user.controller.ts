@@ -64,14 +64,10 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Post('logout')
-  async UserLogout(
-    @Headers('authorization') authorization: string,
-    @Req() request: Request,
-    @Res() res: Response,
-  ) {
+  async UserLogout(@Req() request: Request, @Res() res: Response) {
     try {
-      const userinfo = request['user'];
-      const user = await this.userService.findOneByID(userinfo.id);
+      const userInfo = request['user'];
+      const user = await this.userService.findOneByID(userInfo.id);
       if (user) {
         user.authen_token = null;
         await this.userService.updateUser(user.id, user);
@@ -94,20 +90,18 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('/:id')
   async getUser(
-    @Headers('authorization') authorization: string,
     @Req() request: Request,
     @Res() res: Response,
     @Param('id') id: number,
   ) {
     try {
-      const userinfo = request['user'];
-      const userFindByToken = await this.userService.findOneByID(userinfo.id);
+      const userInfo = request['user'];
+      const userFindByToken = await this.userService.findOneByID(userInfo.id);
       const user = await this.userService.findOneByID(id);
       if (userFindByToken.id === Number(id) || userFindByToken.type === 1) {
         res.status(HttpStatus.OK).send({
           id: user.id,
           username: user.username,
-          password: user.password,
           type: user.type,
         });
       } else {
@@ -128,15 +122,14 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Put('/:id')
   async updateUser(
-    @Headers('authorization') authorization: string,
     @Req() request: Request,
     @Res() res: Response,
     @Param('id') id: number,
     @Body() userUpdate: UserEntity,
   ) {
     try {
-      const userinfo = request['user'];
-      const userFindByToken = await this.userService.findOneByID(userinfo.id);
+      const userInfo = request['user'];
+      const userFindByToken = await this.userService.findOneByID(userInfo.id);
       const user = await this.userService.findOneByID(id);
       if (userFindByToken.id === Number(id) || userFindByToken.type === 1) {
         user.username = userUpdate.username;
@@ -163,14 +156,13 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Delete('/:id')
   async deleteUser(
-    @Headers('authorization') authorization: string,
     @Req() request: Request,
     @Res() res: Response,
     @Param('id') id: number,
   ) {
     try {
-      const userinfo = request['user'];
-      const userFindByToken = await this.userService.findOneByID(userinfo.id);
+      const userInfo = request['user'];
+      const userFindByToken = await this.userService.findOneByID(userInfo.id);
       const user = await this.userService.findOneByID(id);
       if (userFindByToken.id === Number(id) || userFindByToken.type === 1) {
         user.authen_token = null;
