@@ -11,6 +11,8 @@ import { UserEntity } from './entity/user.entity';
 import { UserController } from './users/user.controller';
 import { UserService } from './users/user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { TeamController } from './teams/team.controller';
+import { TeamService } from './teams/team.service';
 
 dotenv.config();
 @Module({
@@ -44,7 +46,7 @@ dotenv.config();
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  controllers: [UserController],
-  providers: [UserService, AuthService, AuthGuard],
+  controllers: [UserController, TeamController],
+  providers: [UserService, AuthService, AuthGuard, TeamService],
 })
 export class AppModule {}
