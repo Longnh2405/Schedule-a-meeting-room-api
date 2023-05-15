@@ -13,6 +13,8 @@ import { UserService } from './users/user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RoomController } from './rooms/room.controller';
 import { RoomService } from './rooms/room.service';
+import { MeetingRoomController } from './meeting-rooms/meeting-room.controller';
+import { MeetingRoomService } from './meeting-rooms/meeting-room.service';
 
 dotenv.config();
 @Module({
@@ -46,7 +48,13 @@ dotenv.config();
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  controllers: [UserController, RoomController],
-  providers: [UserService, AuthService, AuthGuard, RoomService],
+  controllers: [UserController, RoomController, MeetingRoomController],
+  providers: [
+    UserService,
+    AuthService,
+    AuthGuard,
+    RoomService,
+    MeetingRoomService,
+  ],
 })
 export class AppModule {}
