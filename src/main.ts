@@ -14,7 +14,7 @@ async function start() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   SwaggerModule.setup('api-meeting-room', app, document);
 
   await app.listen(3333, (): void => {

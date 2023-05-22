@@ -16,14 +16,16 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-import { LoginLogoutDTO } from 'src/dto/login.logout.dto';
-import { UserDTO } from 'src/dto/user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from 'src/entity/user.entity';
 import { resolveError } from 'src/error/error';
 import { UserService } from './user.service';
 import { AdminGuard } from 'src/auth/admin.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UserDTO } from 'src/dto/UserDTO/user.dto';
+import { LoginLogoutDTO } from 'src/dto/UserDTO/login.logout.dto';
+import { CreateUserDTO } from 'src/dto/UserDTO/createUser.dto';
+import { UpdateUserDTO } from 'src/dto/UserDTO/updateUser.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -36,7 +38,7 @@ export class UserController {
   @UseGuards(AdminGuard)
   @Post()
   async createUser(
-    @Body() user: UserDTO,
+    @Body() user: CreateUserDTO,
     @Res() res: Response,
     @Req() request: Request,
   ): Promise<void> {
@@ -125,7 +127,7 @@ export class UserController {
     @Req() request: Request,
     @Res() res: Response,
     @Param('id') id: number,
-    @Body() userUpdate: UserEntity,
+    @Body() userUpdate: UpdateUserDTO,
   ) {
     try {
       const userInfo = request['user'];
@@ -133,7 +135,9 @@ export class UserController {
       const user = await this.userService.findOneByID(id);
       if (userFindByToken.id === Number(id) || userFindByToken.type === 1) {
         user.username = userUpdate.username;
-        user.password = await bcrypt.hash(user.password, 10);
+        if (userUpdate.password !== null) {
+          user.password = await bcrypt.hash(user.password, 10);
+        }
         await this.userService.updateUser(id, user);
         res.status(HttpStatus.OK).send({
           username: user.username,
