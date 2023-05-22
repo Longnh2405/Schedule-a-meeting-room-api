@@ -13,6 +13,8 @@ import { UserService } from './users/user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { TeamController } from './teams/team.controller';
 import { TeamService } from './teams/team.service';
+import { RoomController } from './rooms/room.controller';
+import { RoomService } from './rooms/room.service';
 
 dotenv.config();
 @Module({
@@ -46,7 +48,7 @@ dotenv.config();
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  controllers: [UserController, TeamController],
-  providers: [UserService, AuthService, AuthGuard, TeamService],
+  controllers: [UserController, TeamController, RoomController],
+  providers: [UserService, AuthService, AuthGuard, TeamService, RoomService],
 })
 export class AppModule {}
