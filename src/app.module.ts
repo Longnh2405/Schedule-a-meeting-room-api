@@ -11,10 +11,10 @@ import { UserEntity } from './entity/user.entity';
 import { UserController } from './users/user.controller';
 import { UserService } from './users/user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { RoomController } from './rooms/room.controller';
-import { RoomService } from './rooms/room.service';
 import { TeamController } from './teams/team.controller';
 import { TeamService } from './teams/team.service';
+import { RoomController } from './rooms/room.controller';
+import { RoomService } from './rooms/room.service';
 
 dotenv.config();
 @Module({

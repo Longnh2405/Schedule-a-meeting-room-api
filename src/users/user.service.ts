@@ -1,7 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { UserDTO } from 'src/dto/user.dto';
+import { CreateUserDTO } from 'src/dto/UserDTO/createUser.dto';
+import { UpdateUserDTO } from 'src/dto/UserDTO/updateUser.dto';
+import { UserDTO } from 'src/dto/UserDTO/user.dto';
+
 import { UserEntity } from 'src/entity/user.entity';
 import { resolveError } from 'src/error/error';
 import { FindOneOptions, Repository } from 'typeorm';
@@ -13,10 +16,10 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(userDTO: UserDTO): Promise<UserDTO> {
+  async createUser(createUser: CreateUserDTO): Promise<CreateUserDTO> {
     try {
-      await this.userRepository.save(userDTO);
-      return plainToInstance(UserDTO, userDTO, {
+      await this.userRepository.save(createUser);
+      return plainToInstance(CreateUserDTO, createUser, {
         exposeDefaultValues: true,
       });
     } catch (error) {
@@ -62,9 +65,12 @@ export class UserService {
     return await this.userRepository.findOne(options);
   }
 
-  async updateUser(id: number, userDTO: UserDTO): Promise<UserDTO> {
-    await this.userRepository.update(id, userDTO);
-    return plainToInstance(UserDTO, userDTO, {
+  async updateUser(
+    id: number,
+    updateUserDTO: UpdateUserDTO,
+  ): Promise<UpdateUserDTO> {
+    await this.userRepository.update(id, updateUserDTO);
+    return plainToInstance(UpdateUserDTO, updateUserDTO, {
       exposeDefaultValues: true,
     });
   }
