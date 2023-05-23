@@ -19,7 +19,8 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RoomService } from './room.service';
-import { CreateUpdateRoomDTO } from 'src/dto/RoomDTO/create-update-room.dto';
+import { CreateRoomDTO } from 'src/dto/RoomDTO/create-room.dto';
+import { UpdateRoomDTO } from 'src/dto/RoomDTO/update-room.dto';
 
 @ApiTags('Rooms')
 @Controller('Rooms')
@@ -29,7 +30,7 @@ export class RoomController {
   @UseGuards(AdminGuard)
   @Post()
   async createRoom(
-    @Body() room: CreateUpdateRoomDTO,
+    @Body() room: CreateRoomDTO,
     @Res() res: Response,
     @Req() request: Request,
   ): Promise<void> {
@@ -46,7 +47,7 @@ export class RoomController {
   @Put('/:id')
   async updateRoom(
     @Param('id') id: number,
-    @Body() room: CreateUpdateRoomDTO,
+    @Body() room: UpdateRoomDTO,
     @Res() res: Response,
     @Req() request: Request,
   ): Promise<void> {

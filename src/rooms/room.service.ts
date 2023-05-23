@@ -1,8 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { CreateUpdateRoomDTO } from 'src/dto/RoomDTO/create-update-room.dto';
+import { CreateRoomDTO } from 'src/dto/RoomDTO/create-room.dto';
 import { RoomDTO } from 'src/dto/RoomDTO/room.dto';
+import { UpdateRoomDTO } from 'src/dto/RoomDTO/update-room.dto';
 import { RoomEntity } from 'src/entity/room.entity';
 
 import { resolveError } from 'src/error/error';
@@ -15,12 +16,10 @@ export class RoomService {
     private readonly roomRepository: Repository<RoomEntity>,
   ) {}
 
-  async createRoom(
-    createRoom: CreateUpdateRoomDTO,
-  ): Promise<CreateUpdateRoomDTO> {
+  async createRoom(createRoom: CreateRoomDTO): Promise<CreateRoomDTO> {
     try {
       await this.roomRepository.save(createRoom);
-      return plainToInstance(CreateUpdateRoomDTO, createRoom, {
+      return plainToInstance(CreateRoomDTO, createRoom, {
         exposeDefaultValues: true,
       });
     } catch (error) {
@@ -41,12 +40,12 @@ export class RoomService {
 
   async updateRoom(
     id: number,
-    updateRoom: CreateUpdateRoomDTO,
-  ): Promise<CreateUpdateRoomDTO> {
+    updateRoom: UpdateRoomDTO,
+  ): Promise<UpdateRoomDTO> {
     try {
       await this.findOneByID(id);
       await this.roomRepository.update(id, updateRoom);
-      return plainToInstance(CreateUpdateRoomDTO, updateRoom, {
+      return plainToInstance(UpdateRoomDTO, updateRoom, {
         exposeDefaultValues: true,
       });
     } catch (error) {

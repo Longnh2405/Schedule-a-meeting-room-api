@@ -7,7 +7,13 @@ import { MeetingRoomDTO } from 'src/dto/MeetingRoomDTO/meeting-room.dto';
 import { UpdateMeetingRoomDTO } from 'src/dto/MeetingRoomDTO/update-meeting_room.dto';
 import { MeetingRoomEntity } from 'src/entity/meeting_room.entity';
 import { resolveError } from 'src/error/error';
-import { FindOneOptions, LessThan, MoreThan, Repository } from 'typeorm';
+import {
+  FindOneOptions,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
+import { MINIMUM_DURATION, minimumTime } from './constant';
 
 @Injectable()
 export class MeetingRoomService {
@@ -21,18 +27,12 @@ export class MeetingRoomService {
   ): Promise<MeetingRoomDTO> {
     try {
       const { start_time, end_time, room_id } = meetingRoom;
-      const MINIMUM_DURATION = 30;
       const conflictingMeeting = await this.meetingRoomRepository.findOne({
         where: [
           {
             room_id: room_id,
-            start_time: start_time,
-            end_time: end_time,
-          },
-          {
-            room_id: room_id,
-            start_time: LessThan(end_time),
-            end_time: MoreThan(start_time),
+            start_time: LessThanOrEqual(end_time),
+            end_time: MoreThanOrEqual(start_time),
           },
         ],
       });
@@ -40,14 +40,13 @@ export class MeetingRoomService {
         start_time >= end_time ||
         conflictingMeeting !== null ||
         new Date(end_time).getTime() - new Date(start_time).getTime() <
-          MINIMUM_DURATION * 60 * 1000
+          MINIMUM_DURATION
       ) {
         throw new HttpException(
           {
             code: HttpStatus.CONFLICT,
             success: false,
-            message:
-              'Thời gian không hợp lệ. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc tối thiểu 30 phút.',
+            message: `Thời gian không hợp lệ. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc tối thiểu ${minimumTime} phút.`,
           },
           HttpStatus.CONFLICT,
         );
@@ -97,7 +96,35 @@ export class MeetingRoomService {
     try {
       const meetingRoom = await this.findOneByID(id);
       const { start_time, end_time, room_id } = updateMeetingRoom;
-      const MINIMUM_DURATION = 30;
+      const isTimeRangeTrue = function (
+        conflict,
+        id,
+        start_time,
+        end_time,
+      ): Boolean {
+        return (
+          (conflict === null &&
+            new Date(end_time).getTime() - new Date(start_time).getTime() >=
+              MINIMUM_DURATION) ||
+          (conflict !== null &&
+            Number(id) === conflict.id &&
+            new Date(end_time).getTime() - new Date(start_time).getTime() >=
+              MINIMUM_DURATION)
+        );
+      };
+      const isTimeRangeFalse = function (
+        conflict,
+        id,
+        start_time,
+        end_time,
+      ): Boolean {
+        return (
+          (conflict !== null && Number(id) !== conflict.id) ||
+          new Date(end_time).getTime() - new Date(start_time).getTime() <
+            MINIMUM_DURATION
+        );
+      };
+
       // kiểm tra có truyền vào thời gian mới để sửa hay không, nếu không thì dùng lại thời gian cũ
       //=====================================
       if (start_time === null && end_time === null) {
@@ -105,19 +132,19 @@ export class MeetingRoomService {
           where: [
             {
               room_id: room_id,
-              start_time: new Date(meetingRoom.start_time),
-              end_time: new Date(meetingRoom.end_time),
-            },
-            {
-              room_id: room_id,
-              start_time: LessThan(new Date(meetingRoom.end_time)),
-              end_time: MoreThan(new Date(meetingRoom.start_time)),
+              start_time: LessThanOrEqual(new Date(meetingRoom.end_time)),
+              end_time: MoreThanOrEqual(new Date(meetingRoom.start_time)),
             },
           ],
         });
+
         if (
-          checkConflictMeeting !== null &&
-          Number(id) === checkConflictMeeting.id
+          await isTimeRangeTrue(
+            checkConflictMeeting,
+            id,
+            meetingRoom.start_time,
+            meetingRoom.end_time,
+          )
         ) {
           updateMeetingRoom.start_time = new Date(meetingRoom.start_time);
           updateMeetingRoom.end_time = new Date(meetingRoom.end_time);
@@ -125,7 +152,15 @@ export class MeetingRoomService {
           return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
             exposeDefaultValues: true,
           });
-        } else {
+        }
+        if (
+          await isTimeRangeFalse(
+            checkConflictMeeting,
+            id,
+            meetingRoom.start_time,
+            meetingRoom.end_time,
+          )
+        ) {
           throw new HttpException(
             {
               code: HttpStatus.CONFLICT,
@@ -144,24 +179,19 @@ export class MeetingRoomService {
             where: [
               {
                 room_id: room_id,
-                start_time: new Date(meetingRoom.start_time),
-                end_time: end_time,
-              },
-              {
-                room_id: room_id,
-                start_time: LessThan(end_time),
-                end_time: MoreThan(new Date(meetingRoom.start_time)),
+                start_time: LessThanOrEqual(end_time),
+                end_time: MoreThanOrEqual(new Date(meetingRoom.start_time)),
               },
             ],
           });
         const outputStartTime = zonedTimeToUtc(meetingRoom.start_time, 'GMT+0');
         if (
-          (checkConflictMeetingByStartTime !== null &&
-            Number(id) === checkConflictMeetingByStartTime.id &&
-            new Date(end_time).getTime() -
-              new Date(outputStartTime).getTime() >=
-              MINIMUM_DURATION * 60 * 1000) ||
-          checkConflictMeetingByStartTime === null
+          await isTimeRangeTrue(
+            checkConflictMeetingByStartTime,
+            id,
+            outputStartTime,
+            end_time,
+          )
         ) {
           updateMeetingRoom.start_time = new Date(meetingRoom.start_time);
           await this.meetingRoomRepository.update(id, updateMeetingRoom);
@@ -170,10 +200,12 @@ export class MeetingRoomService {
           });
         }
         if (
-          (checkConflictMeetingByStartTime !== null &&
-            Number(id) !== checkConflictMeetingByStartTime.id) ||
-          new Date(end_time).getTime() - new Date(outputStartTime).getTime() <
-            MINIMUM_DURATION * 60 * 1000
+          await isTimeRangeFalse(
+            checkConflictMeetingByStartTime,
+            id,
+            outputStartTime,
+            end_time,
+          )
         ) {
           throw new HttpException(
             {
@@ -194,24 +226,19 @@ export class MeetingRoomService {
             where: [
               {
                 room_id: room_id,
-                start_time: start_time,
-                end_time: new Date(meetingRoom.end_time),
-              },
-              {
-                room_id: room_id,
-                start_time: LessThan(new Date(meetingRoom.end_time)),
-                end_time: MoreThan(start_time),
+                start_time: LessThanOrEqual(new Date(meetingRoom.end_time)),
+                end_time: MoreThanOrEqual(start_time),
               },
             ],
           });
         const outputEndTime = zonedTimeToUtc(meetingRoom.end_time, 'GMT+0');
         if (
-          (checkConflictMeetingByEndTime !== null &&
-            Number(id) === checkConflictMeetingByEndTime.id &&
-            new Date(outputEndTime).getTime() -
-              new Date(start_time).getTime() >=
-              MINIMUM_DURATION * 60 * 1000) ||
-          checkConflictMeetingByEndTime === null
+          await isTimeRangeTrue(
+            checkConflictMeetingByEndTime,
+            id,
+            start_time,
+            outputEndTime,
+          )
         ) {
           updateMeetingRoom.end_time = new Date(meetingRoom.end_time);
           await this.meetingRoomRepository.update(id, updateMeetingRoom);
@@ -220,10 +247,12 @@ export class MeetingRoomService {
           });
         }
         if (
-          (checkConflictMeetingByEndTime !== null &&
-            Number(id) !== checkConflictMeetingByEndTime.id) ||
-          new Date(end_time).getTime() - new Date(outputEndTime).getTime() <
-            MINIMUM_DURATION * 60 * 1000
+          await isTimeRangeFalse(
+            checkConflictMeetingByEndTime,
+            id,
+            start_time,
+            outputEndTime,
+          )
         ) {
           throw new HttpException(
             {
@@ -241,21 +270,21 @@ export class MeetingRoomService {
         where: [
           {
             room_id: room_id,
-            start_time: start_time,
-            end_time: end_time,
-          },
-          {
-            room_id: room_id,
-            start_time: LessThan(end_time),
-            end_time: MoreThan(start_time),
+            start_time: LessThanOrEqual(end_time),
+            end_time: MoreThanOrEqual(start_time),
           },
         ],
       });
+      if (await isTimeRangeTrue(conflictingMeeting, id, start_time, end_time)) {
+        await this.meetingRoomRepository.update(id, updateMeetingRoom);
+        return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
+          exposeDefaultValues: true,
+        });
+      }
+
+      ///===================================/////////////////////////////////////////==================================///
       if (
-        start_time >= end_time ||
-        (conflictingMeeting !== null && conflictingMeeting.id !== Number(id)) ||
-        new Date(end_time).getTime() - new Date(start_time).getTime() <
-          MINIMUM_DURATION * 60 * 1000
+        await isTimeRangeFalse(conflictingMeeting, id, start_time, end_time)
       ) {
         throw new HttpException(
           {
@@ -266,17 +295,6 @@ export class MeetingRoomService {
           },
           HttpStatus.CONFLICT,
         );
-      } else if (
-        (conflictingMeeting === null ||
-          (conflictingMeeting !== null &&
-            Number(id) === conflictingMeeting.id)) &&
-        new Date(end_time).getTime() - new Date(start_time).getTime() >=
-          MINIMUM_DURATION * 60 * 1000
-      ) {
-        await this.meetingRoomRepository.update(id, updateMeetingRoom);
-        return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
-          exposeDefaultValues: true,
-        });
       }
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {

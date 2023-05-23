@@ -99,7 +99,6 @@ export class MeetingRoomController {
     @Param('room_id') room_id: number,
   ): Promise<void> {
     const userInfo = req['user'];
-    console.log(userInfo.type);
     const meetingRoom = await this.meetingRoomService.getMeetingRoomForUser(
       room_id,
     );
