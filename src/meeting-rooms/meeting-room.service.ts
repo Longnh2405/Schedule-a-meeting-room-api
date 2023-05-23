@@ -254,18 +254,7 @@ export class MeetingRoomService {
         );
       }
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        throw new HttpException(
-          {
-            code: HttpStatus.CONFLICT,
-            success: false,
-            message: 'CONFLICT DATA',
-          },
-          HttpStatus.CONFLICT,
-        );
-      } else {
-        resolveError(error);
-      }
+      resolveError(error);
     }
   }
 
