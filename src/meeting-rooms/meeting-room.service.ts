@@ -13,7 +13,7 @@ import {
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
-import { MINIMUM_DURATION, minimumTime } from './constant';
+import { MINIMUM_DURATION } from './constant';
 
 @Injectable()
 export class MeetingRoomService {
@@ -46,7 +46,7 @@ export class MeetingRoomService {
           {
             code: HttpStatus.CONFLICT,
             success: false,
-            message: `Thời gian không hợp lệ. Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc tối thiểu ${minimumTime} phút.`,
+            message: `Thời gian không hợp lệ`,
           },
           HttpStatus.CONFLICT,
         );
@@ -96,7 +96,7 @@ export class MeetingRoomService {
     try {
       const meetingRoom = await this.findOneByID(id);
       const { start_time, end_time, room_id } = updateMeetingRoom;
-      const isTimeRangeTrue = function (
+      const isTimeRangeValid = function (
         conflict,
         id,
         start_time,
@@ -112,18 +112,6 @@ export class MeetingRoomService {
               MINIMUM_DURATION)
         );
       };
-      const isTimeRangeFalse = function (
-        conflict,
-        id,
-        start_time,
-        end_time,
-      ): Boolean {
-        return (
-          (conflict !== null && Number(id) !== conflict.id) ||
-          new Date(end_time).getTime() - new Date(start_time).getTime() <
-            MINIMUM_DURATION
-        );
-      };
 
       // kiểm tra có truyền vào thời gian mới để sửa hay không, nếu không thì dùng lại thời gian cũ
       //=====================================
@@ -137,9 +125,8 @@ export class MeetingRoomService {
             },
           ],
         });
-
         if (
-          await isTimeRangeTrue(
+          await isTimeRangeValid(
             checkConflictMeeting,
             id,
             meetingRoom.start_time,
@@ -152,15 +139,7 @@ export class MeetingRoomService {
           return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
             exposeDefaultValues: true,
           });
-        }
-        if (
-          await isTimeRangeFalse(
-            checkConflictMeeting,
-            id,
-            meetingRoom.start_time,
-            meetingRoom.end_time,
-          )
-        ) {
+        } else {
           throw new HttpException(
             {
               code: HttpStatus.CONFLICT,
@@ -186,7 +165,7 @@ export class MeetingRoomService {
           });
         const outputStartTime = zonedTimeToUtc(meetingRoom.start_time, 'GMT+0');
         if (
-          await isTimeRangeTrue(
+          await isTimeRangeValid(
             checkConflictMeetingByStartTime,
             id,
             outputStartTime,
@@ -198,21 +177,12 @@ export class MeetingRoomService {
           return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
             exposeDefaultValues: true,
           });
-        }
-        if (
-          await isTimeRangeFalse(
-            checkConflictMeetingByStartTime,
-            id,
-            outputStartTime,
-            end_time,
-          )
-        ) {
+        } else {
           throw new HttpException(
             {
               code: HttpStatus.CONFLICT,
               success: false,
-              message:
-                'Thời gian không hợp lệ/Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc tối thiểu 30 phút.',
+              message: 'Thời gian không hợp lệ',
             },
             HttpStatus.CONFLICT,
           );
@@ -233,7 +203,7 @@ export class MeetingRoomService {
           });
         const outputEndTime = zonedTimeToUtc(meetingRoom.end_time, 'GMT+0');
         if (
-          await isTimeRangeTrue(
+          await isTimeRangeValid(
             checkConflictMeetingByEndTime,
             id,
             start_time,
@@ -245,21 +215,12 @@ export class MeetingRoomService {
           return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
             exposeDefaultValues: true,
           });
-        }
-        if (
-          await isTimeRangeFalse(
-            checkConflictMeetingByEndTime,
-            id,
-            start_time,
-            outputEndTime,
-          )
-        ) {
+        } else {
           throw new HttpException(
             {
               code: HttpStatus.CONFLICT,
               success: false,
-              message:
-                'Thời gian không hợp lệ/Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc tối thiểu 30 phút.',
+              message: 'Thời gian không hợp lệ',
             },
             HttpStatus.CONFLICT,
           );
@@ -275,23 +236,19 @@ export class MeetingRoomService {
           },
         ],
       });
-      if (await isTimeRangeTrue(conflictingMeeting, id, start_time, end_time)) {
+      if (
+        await isTimeRangeValid(conflictingMeeting, id, start_time, end_time)
+      ) {
         await this.meetingRoomRepository.update(id, updateMeetingRoom);
         return plainToInstance(UpdateMeetingRoomDTO, updateMeetingRoom, {
           exposeDefaultValues: true,
         });
-      }
-
-      ///===================================/////////////////////////////////////////==================================///
-      if (
-        await isTimeRangeFalse(conflictingMeeting, id, start_time, end_time)
-      ) {
+      } else {
         throw new HttpException(
           {
             code: HttpStatus.CONFLICT,
             success: false,
-            message:
-              'Thời gian không hợp lệ/Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc tối thiểu 30 phút.',
+            message: 'Thời gian không hợp lệ',
           },
           HttpStatus.CONFLICT,
         );
