@@ -15,6 +15,8 @@ import { TeamController } from './teams/team.controller';
 import { TeamService } from './teams/team.service';
 import { RoomController } from './rooms/room.controller';
 import { RoomService } from './rooms/room.service';
+import { MeetingRoomController } from './meeting-rooms/meeting-room.controller';
+import { MeetingRoomService } from './meeting-rooms/meeting-room.service';
 
 dotenv.config();
 @Module({
@@ -48,7 +50,19 @@ dotenv.config();
       signOptions: { expiresIn: '60s' },
     }),
   ],
-  controllers: [UserController, TeamController, RoomController],
-  providers: [UserService, AuthService, AuthGuard, TeamService, RoomService],
+  controllers: [
+    UserController,
+    RoomController,
+    TeamController,
+    MeetingRoomController,
+  ],
+  providers: [
+    UserService,
+    AuthService,
+    AuthGuard,
+    TeamService,
+    RoomService,
+    MeetingRoomService,
+  ],
 })
 export class AppModule {}
