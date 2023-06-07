@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { CreateUserDTO } from 'src/dto/UserDTO/createUser.dto';
-import { UpdateUserDTO } from 'src/dto/UserDTO/updateUser.dto';
+import { CreateUserDTO } from '../dto/UserDTO/createUser.dto';
+import { UpdateUserDTO } from '../dto/UserDTO/updateUser.dto';
 import { UserDTO } from 'src/dto/UserDTO/user.dto';
 
-import { UserEntity } from 'src/entity/user.entity';
-import { resolveError } from 'src/error/error';
+import { UserEntity } from '../entity/user.entity';
+import { resolveError } from '../error/error';
 import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
