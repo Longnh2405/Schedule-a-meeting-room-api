@@ -1,4 +1,4 @@
-import { BaseEntity } from 'src/common/mysql/base.entity';
+import { BaseEntity } from '../common/mysql/base.entity';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { MeetingEntity } from './meeting.entity';
 import { UserRole } from './enum.entity';

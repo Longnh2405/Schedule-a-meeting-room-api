@@ -15,17 +15,17 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { AuthService } from 'src/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from 'src/entity/user.entity';
-import { resolveError } from 'src/error/error';
+import { resolveError } from '../error/error';
 import { UserService } from './user.service';
-import { AdminGuard } from 'src/auth/admin.guard';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { UserDTO } from 'src/dto/UserDTO/user.dto';
-import { LoginLogoutDTO } from 'src/dto/UserDTO/login.logout.dto';
-import { CreateUserDTO } from 'src/dto/UserDTO/createUser.dto';
-import { UpdateUserDTO } from 'src/dto/UserDTO/updateUser.dto';
+import { LoginLogoutDTO } from '../dto/UserDTO/login.logout.dto';
+import { CreateUserDTO } from '../dto/UserDTO/createUser.dto';
+import { UpdateUserDTO } from '../dto/UserDTO/updateUser.dto';
 
 @ApiTags('Users')
 @Controller('users')
