@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { CreateUpdateTeamDTO } from 'src/dto/TeamDTO/create-update-team.dto';
+import { CreateUpdateTeamDTO } from '../../src/dto/TeamDTO/create-update-team.dto';
 import { TeamDTO } from 'src/dto/TeamDTO/team.dto';
-import { TeamEntity } from 'src/entity/team.entity';
-import { resolveError } from 'src/error/error';
+import { TeamEntity } from '../../src/entity/team.entity';
+import { resolveError } from '../../src/error/error';
 import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()

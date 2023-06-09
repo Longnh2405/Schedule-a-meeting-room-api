@@ -19,6 +19,8 @@ import { MeetingRoomController } from './meeting-rooms/meeting-room.controller';
 import { MeetingRoomService } from './meeting-rooms/meeting-room.service';
 import { MeetingController } from './meetings/meeting.controller';
 import { MeetingService } from './meetings/meeting.service';
+import { MyServiceService } from './my-service/my-service.service';
+import { TeamServiceService } from './team.service/team.service.service';
 
 dotenv.config();
 @Module({
@@ -67,6 +69,8 @@ dotenv.config();
     RoomService,
     MeetingRoomService,
     MeetingService,
+    MyServiceService,
+    TeamServiceService,
   ],
 })
 export class AppModule {}
