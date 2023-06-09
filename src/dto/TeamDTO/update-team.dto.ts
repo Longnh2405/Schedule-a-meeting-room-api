@@ -1,6 +1,6 @@
 import { IsNotEmpty, MinLength } from 'class-validator';
 
-export class CreateUpdateTeamDTO {
+export class UpdateTeamDTO {
   @IsNotEmpty()
   @MinLength(5)
   name: string;

@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { CreateUpdateTeamDTO } from '../../src/dto/TeamDTO/create-update-team.dto';
 import { TeamDTO } from 'src/dto/TeamDTO/team.dto';
 import { TeamEntity } from '../../src/entity/team.entity';
 import { resolveError } from '../../src/error/error';
 import { FindOneOptions, Repository } from 'typeorm';
+import { CreateTeamDTO } from 'src/dto/TeamDTO/create-team.dto';
+import { UpdateTeamDTO } from 'src/dto/TeamDTO/update-team.dto';
 
 @Injectable()
 export class TeamService {
@@ -14,12 +15,10 @@ export class TeamService {
     private readonly teamRepository: Repository<TeamEntity>,
   ) {}
 
-  async createTeam(
-    createTeam: CreateUpdateTeamDTO,
-  ): Promise<CreateUpdateTeamDTO> {
+  async createTeam(createTeam: CreateTeamDTO): Promise<CreateTeamDTO> {
     try {
       await this.teamRepository.save(createTeam);
-      return plainToInstance(CreateUpdateTeamDTO, createTeam, {
+      return plainToInstance(CreateTeamDTO, createTeam, {
         exposeDefaultValues: true,
       });
     } catch (error) {
@@ -40,12 +39,12 @@ export class TeamService {
 
   async updateTeam(
     id: number,
-    updateTeam: CreateUpdateTeamDTO,
-  ): Promise<CreateUpdateTeamDTO> {
+    updateTeam: UpdateTeamDTO,
+  ): Promise<UpdateTeamDTO> {
     try {
       await this.findOneByID(id);
       await this.teamRepository.update(id, updateTeam);
-      return plainToInstance(CreateUpdateTeamDTO, updateTeam, {
+      return plainToInstance(UpdateTeamDTO, updateTeam, {
         exposeDefaultValues: true,
       });
     } catch (error) {

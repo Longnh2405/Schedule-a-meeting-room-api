@@ -11,13 +11,13 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { TeamService } from './team.service';
-import { AdminGuard } from 'src/auth/admin.guard';
-import { CreateUpdateTeamDTO } from 'src/dto/TeamDTO/create-update-team.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { TeamDTO } from 'src/dto/TeamDTO/team.dto';
+import { Response } from 'express';
+import { AdminGuard } from 'src/auth/admin.guard';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { CreateTeamDTO } from 'src/dto/TeamDTO/create-team.dto';
+import { UpdateTeamDTO } from 'src/dto/TeamDTO/update-team.dto';
+import { TeamService } from './team.service';
 
 @ApiTags('Teams')
 @Controller('teams')
@@ -27,7 +27,7 @@ export class TeamController {
   @UseGuards(AdminGuard)
   @Post()
   async createTeam(
-    @Body() team: CreateUpdateTeamDTO,
+    @Body() team: CreateTeamDTO,
     @Res() res: Response,
     @Req() request: Request,
   ): Promise<void> {
@@ -44,7 +44,7 @@ export class TeamController {
   @Put('/:id')
   async updateTeam(
     @Param('id') id: number,
-    @Body() team: CreateUpdateTeamDTO,
+    @Body() team: UpdateTeamDTO,
     @Res() res: Response,
     @Req() request: Request,
   ): Promise<void> {
