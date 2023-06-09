@@ -5,8 +5,8 @@ import { TeamDTO } from 'src/dto/TeamDTO/team.dto';
 import { TeamEntity } from '../../src/entity/team.entity';
 import { resolveError } from '../../src/error/error';
 import { FindOneOptions, Repository } from 'typeorm';
-import { CreateTeamDTO } from 'src/dto/TeamDTO/create-team.dto';
-import { UpdateTeamDTO } from 'src/dto/TeamDTO/update-team.dto';
+import { CreateTeamDTO } from '../../src/dto/TeamDTO/create-team.dto';
+import { UpdateTeamDTO } from '../../src/dto/TeamDTO/update-team.dto';
 
 @Injectable()
 export class TeamService {

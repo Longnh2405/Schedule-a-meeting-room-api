@@ -1,12 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { CreateRoomDTO } from 'src/dto/RoomDTO/create-room.dto';
-import { RoomDTO } from 'src/dto/RoomDTO/room.dto';
-import { UpdateRoomDTO } from 'src/dto/RoomDTO/update-room.dto';
-import { RoomEntity } from 'src/entity/room.entity';
-
-import { resolveError } from 'src/error/error';
+import { CreateRoomDTO } from '../../src/dto/RoomDTO/create-room.dto';
+import { RoomDTO } from '../../src/dto/RoomDTO/room.dto';
+import { UpdateRoomDTO } from '../../src/dto/RoomDTO/update-room.dto';
+import { RoomEntity } from '../../src/entity/room.entity';
+import { resolveError } from '../../src/error/error';
 import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
