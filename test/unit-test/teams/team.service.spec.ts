@@ -31,7 +31,7 @@ describe('TeamService', () => {
   });
 
   describe('createTeam', () => {
-    it('should create a new team', async () => {
+    it('Nên tạo ra 1 nhóm', async () => {
       const createTeamDTO: CreateTeamDTO = {
         name: 'Nhóm 1',
       };
@@ -45,7 +45,7 @@ describe('TeamService', () => {
       expect(result).toEqual(plainToClass(CreateTeamDTO, createTeamDTO));
     });
 
-    it('should throw a conflict exception when duplicate entry exists', async () => {
+    it('Trả ra lỗi trùng lặp dữ liệu', async () => {
       const createTeamDTO: CreateTeamDTO = {
         name: 'Nhóm 1',
       };
@@ -66,7 +66,7 @@ describe('TeamService', () => {
   });
 
   describe('updateTeam', () => {
-    it('should update an existing team', async () => {
+    it('Nên cập nhật team thành công', async () => {
       const id = 1;
       const updateTeamDTO: UpdateTeamDTO = {
         name: 'Nhóm 1',
@@ -83,7 +83,7 @@ describe('TeamService', () => {
       expect(result).toEqual(plainToClass(UpdateTeamDTO, updateTeamDTO));
     });
 
-    it('should throw a conflict exception when duplicate entry exists', async () => {
+    it('Trả ra lỗi trùng lặp dữ liệu', async () => {
       const id = 1;
       const updateTeamDTO: UpdateTeamDTO = {
         name: 'Nhóm 1',
@@ -112,7 +112,7 @@ describe('TeamService', () => {
   });
 
   describe('findOneByID', () => {
-    it('should find a team by ID', async () => {
+    it('Nên trả ra kết quả tìm kiếm', async () => {
       const id = 1;
       const teamDTO: TeamDTO = {
         id: 5,
@@ -129,7 +129,7 @@ describe('TeamService', () => {
       expect(result).toEqual(teamDTO);
     });
 
-    it('should throw a not found exception when team is not found', async () => {
+    it('Trả ra lỗi nếu không tìm thấy dữ liệu', async () => {
       const id = 1;
 
       const findOneSpy = jest
@@ -150,7 +150,7 @@ describe('TeamService', () => {
   });
 
   describe('deleteTeam', () => {
-    it('should delete an existing team', async () => {
+    it('Nên xoá team thành công', async () => {
       const id = 1;
       const findOneSpy = jest
         .spyOn(teamService, 'findOneByID')
