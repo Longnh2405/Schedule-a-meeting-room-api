@@ -2,11 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { zonedTimeToUtc } from 'date-fns-tz';
-import { CreateMeetingRoomDTO } from 'src/dto/MeetingRoomDTO/create-meeting_room.dto';
-import { MeetingRoomDTO } from 'src/dto/MeetingRoomDTO/meeting-room.dto';
-import { UpdateMeetingRoomDTO } from 'src/dto/MeetingRoomDTO/update-meeting_room.dto';
-import { MeetingRoomEntity } from 'src/entity/meeting_room.entity';
-import { resolveError } from 'src/error/error';
+import { CreateMeetingRoomDTO } from '../../src/dto/MeetingRoomDTO/create-meeting_room.dto';
+import { MeetingRoomDTO } from '../../src/dto/MeetingRoomDTO/meeting-room.dto';
+import { UpdateMeetingRoomDTO } from '../../src/dto/MeetingRoomDTO/update-meeting_room.dto';
+import { MeetingRoomEntity } from '../../src/entity/meeting_room.entity';
+import { resolveError } from '../../src/error/error';
 import {
   FindOneOptions,
   LessThanOrEqual,
@@ -36,6 +36,14 @@ export class MeetingRoomService {
           },
         ],
       });
+      // console.log(conflictingMeeting);
+      // console.log('check 1:', start_time >= end_time);
+      // console.log('check 2:', conflictingMeeting !== null);
+      // console.log(
+      //   'check 3:',
+      //   new Date(end_time).getTime() - new Date(start_time).getTime() <
+      //     MINIMUM_DURATION,
+      // );
       if (
         start_time >= end_time ||
         conflictingMeeting !== null ||
@@ -112,7 +120,6 @@ export class MeetingRoomService {
               MINIMUM_DURATION)
         );
       };
-
       // kiểm tra có truyền vào thời gian mới để sửa hay không, nếu không thì dùng lại thời gian cũ
       //=====================================
       if (start_time === null && end_time === null) {
@@ -236,6 +243,7 @@ export class MeetingRoomService {
           },
         ],
       });
+
       if (
         await isTimeRangeValid(conflictingMeeting, id, start_time, end_time)
       ) {
@@ -295,3 +303,34 @@ export class MeetingRoomService {
     }
   }
 }
+
+// const { room_id, start_time, end_time } = createMeetingRoomDTO;
+
+//   const options = {
+//     where: [
+//       {
+//         room_id: room_id,
+//         start_time: LessThanOrEqual(end_time),
+//         end_time: MoreThanOrEqual(start_time),
+//       },
+//     ],
+//   };
+//   const findOneSpy = jest
+//     .spyOn(meetingRoomRepository, 'findOne')
+//     .mockResolvedValue(
+//       createMeetingRoomDTO as
+//         | MeetingRoomEntity
+//         | Promise<MeetingRoomEntity>,
+// );
+// const createMeetingRoomDTO: CreateMeetingRoomDTO = {
+//     // Cung cấp các thuộc tính cần thiết
+//   };
+
+// Mock giá trị trả về dự kiến từ repository
+//   const expectedMeetingRoom: MeetingRoomEntity = {
+//     id: 1,
+//     room_id: 1,
+//     start_time: new Date('2022-05-30T00:00:00Z'),
+//     end_time: new Date('2022-05-30T01:00:00Z'),
+//     status: 1,
+//   };

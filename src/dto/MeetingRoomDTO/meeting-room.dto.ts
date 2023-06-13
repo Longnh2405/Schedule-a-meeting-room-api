@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { MysqlBaseDTO } from 'src/common/base.dto';
+import { MysqlBaseDTO } from '../../../src/common/base.dto';
 
 export class MeetingRoomDTO extends MysqlBaseDTO {
   @Expose()
@@ -15,5 +15,5 @@ export class MeetingRoomDTO extends MysqlBaseDTO {
   end_time: string;
 
   @Expose()
-  status: string;
+  status: number;
 }
